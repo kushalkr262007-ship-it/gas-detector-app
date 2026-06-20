@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Gas Detector Dashboard</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            margin: 20px;
+        }
+
+        .card {
+            width: 350px;
+            margin: auto;
+            border: 1px solid black;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        #reading {
+            font-size: 40px;
+        }
+
+        meter {
+            width: 250px;
+            height: 30px;
+        }
+
+        canvas {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+
+        <h2>Gas Detector Dashboard</h2>
+
+        <h1 id="reading">0</h1>
+
+        <h3 id="status">SAFE</h3>
+
+        <meter id="gasMeter"
+               min="0"
+               max="1023"
+               value="0">
+        </meter>
+
+        <br><br>
+
+        Threshold
+
+        <input type="number"
+               id="threshold"
+               value="300">
+
+        <button onclick="changeThreshold()">
+            Set
+        </button>
+
+        <canvas id="myChart"></canvas>
+
+    </div>
+
+    <script>
+
+        let threshold = 300;
+
+        function changeThreshold() {
+
+            threshold =
+                parseInt(
+                    document.getElementById("threshold").value
+                );
+
+            alert("Threshold Changed");
+        }
+
+        const labels = [];
+        const values = [];
+
+        const chart = new Chart(
+            document.getElementById('myChart'),
+            {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Gas Value',
+                        data: values
+                    }]
+                }
+            }
+        );
+
+        function updateReading(value) {
+
+            document.getElementById("reading").innerHTML = value;
+
+            document.getElementById("gasMeter").value = value;
+
+            if (value > threshold) {
+                document.getElementById("status").innerHTML =
+                    "⚠ GAS DETECTED";
+            }
+            else {
+                document.getElementById("status").innerHTML =
+                    "SAFE";
+            }
+
+            labels.push("");
+            values.push(value);
+
+            if (labels.length > 20) {
+                labels.shift();
+                values.shift();
+            }
+
+            chart.update();
+        }
+
+        /* TEST DATA */
+
+        setInterval(() => {
+
+            let random =
+                Math.floor(Math.random() * 600);
+
+            updateReading(random);
+
+        }, 1000);
+
+    </script>
+
+</body>
+
+</html>
